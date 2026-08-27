@@ -1,0 +1,11 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["/default"],
+  "packageRules": [
+    {
+      "description": "This repo publishes to npm. :pinVersions would otherwise pin peerDependencies and engines to exact versions, forcing every downstream consumer onto that exact version. Replace the range only when it no longer matches, instead of pinning.",
+      "matchDepTypes": ["peerDependencies", "engines"],
+      "rangeStrategy": "replace"
+    }
+  ]
+}

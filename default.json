@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":automergeMinor", ":pinVersions"],
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "description": "ESLint and @cloudfour/eslint-config pin each other's plugins, so bumping either one alone produces a PR that crashes inside a lint rule. Keep them in a single PR. No-op in repos that don't use them.",
+      "groupName": "eslint",
+      "matchPackageNames": [
+        "eslint",
+        "@cloudfour/eslint-config",
+        "typescript-eslint"
+      ]
+    },
+    {
+      "description": "stylelint-config-cloudfour declares stylelint as a peer dependency, so the two must move together for the same reason ESLint and its config do. No-op in repos that don't use them.",
+      "groupName": "stylelint",
+      "matchPackageNames": [
+        "stylelint",
+        "stylelint-config-cloudfour",
+        "stylelint-config-cloudfour-suit"
+      ]
+    }
+  ]
+}
