@@ -3,8 +3,8 @@
   "extends": ["/default"],
   "packageRules": [
     {
-      "description": "This repo publishes to npm. :pinVersions would otherwise pin peerDependencies and engines to exact versions, forcing every downstream consumer onto that exact version. Replace the range only when it no longer matches, instead of pinning.",
-      "matchDepTypes": ["peerDependencies", "engines"],
+      "description": "This repo publishes to npm, so its peerDependencies are a constraint on consumers rather than a choice for this repo. :pinVersions would pin them to exact versions, forcing every downstream consumer onto that one version. Replace the range only when it no longer matches, instead of pinning. (engines gets the same treatment for every repo, published or not, in the default preset.)",
+      "matchDepTypes": ["peerDependencies"],
       "rangeStrategy": "replace"
     }
   ]
