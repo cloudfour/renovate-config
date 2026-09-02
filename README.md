@@ -12,6 +12,8 @@ The baseline for every repo. It extends `config:recommended`, auto-merges patch 
 
 It also groups `eslint` with `@cloudfour/eslint-config`, and `stylelint` with our stylelint configs, because those packages pin each other's plugins and a split PR lands in a broken state. Both groups are no-ops in repos that don't use those packages.
 
+One rule opts out of pinning: `engines` is left as a range. It describes which Node versions a project works on, so an exact version there contradicts the `.nvmrc` and CI `node-version` the project is tested on. Raising a supported-Node floor stays a deliberate edit. Node updates to `.nvmrc` and to workflow files come from different managers and are unaffected.
+
 ```json
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
@@ -21,7 +23,7 @@ It also groups `eslint` with `@cloudfour/eslint-config`, and `stylelint` with ou
 
 ### `library`
 
-For repos that **publish to npm**. Everything in `default`, plus one rule that keeps `peerDependencies` and `engines` as ranges rather than pinning them — pinning those would force every downstream consumer onto one exact version.
+For repos that **publish to npm**. Everything in `default`, plus one rule that keeps `peerDependencies` as ranges rather than pinning them — a pinned peer range forces every downstream consumer onto one exact version.
 
 ```json
 {
@@ -30,7 +32,7 @@ For repos that **publish to npm**. Everything in `default`, plus one rule that k
 }
 ```
 
-If a repo publishes to npm, use `library` even if it has no `peerDependencies` or `engines` field today. The rule costs nothing while those fields are absent, and it's the difference between a silent breaking release and a correct one on the day someone adds them.
+If a repo publishes to npm, use `library` even if it has no `peerDependencies` field today. The rule costs nothing while that field is absent, and it's the difference between a silent breaking release and a correct one on the day someone adds it.
 
 ## Versioning
 
