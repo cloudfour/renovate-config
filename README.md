@@ -14,6 +14,8 @@ It also groups `eslint` with `@cloudfour/eslint-config`, and `stylelint` with ou
 
 One rule opts out of pinning: `engines` is left as a range. It describes which Node versions a project works on, so an exact version there contradicts the `.nvmrc` and CI `node-version` the project is tested on. Raising a supported-Node floor stays a deliberate edit. Node updates to `.nvmrc` and to workflow files come from different managers and are unaffected.
 
+Those two Node updates arrive as a single PR. Renovate normally learns about a release from nodejs.org for `.nvmrc` and a day or two later from `actions/node-versions` for `setup-node`, so with the three-day wait they would come due on different days, as two PRs. Until both merge, local development and CI would run different Node versions. The preset reads both from nodejs.org so they come due together. A Node image in a job's `container:` is still checked against Docker Hub, since a tag can't be used until it's published there.
+
 ```json
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",

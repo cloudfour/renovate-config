@@ -22,6 +22,15 @@
       ]
     },
     {
+      "description": "Each Node release updates .nvmrc (nvm manager, versions from nodejs.org) and setup-node's node-version (github-actions manager, versions from actions/node-versions). Both updates share a branch, but actions/node-versions publishes a day or two later, so minimumReleaseAge clears the .nvmrc update first and it automerges alone. The workflow update then follows as a second PR, and until it merges, local development and CI run different Node versions. Reading setup-node's versions from nodejs.org gives both updates the same release date, so they land in one PR. setup-node downloads from nodejs.org itself when actions/node-versions doesn't have a version yet. extractVersion replaces the github-actions manager's pattern, which rejects nodejs.org's v-prefixed versions and would otherwise drop every update without a warning. Job container images keep their Docker Hub data, since an image tag only exists once it's published there. No-op in repos that pin Node in only one place.",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["uses-with"],
+      "matchDepNames": ["node"],
+      "overrideDatasource": "node-version",
+      "overridePackageName": "node",
+      "extractVersion": "^v(?<version>.+)$"
+    },
+    {
       "description": "engines.node is a compatibility range, not a dependency. In a published package it states what consumers need; in a private app or theme it states the floor contributors need. :pinVersions would rewrite it to one exact version, which misstates that range and contradicts the .nvmrc and CI node-version the project is actually tested on. 'replace' rewrites the range only once the current version stops satisfying it, so raising a supported-Node floor stays a deliberate edit. The nvm and github-actions managers are untouched and keep proposing Node updates.",
       "matchManagers": ["npm"],
       "matchDepTypes": ["engines"],
