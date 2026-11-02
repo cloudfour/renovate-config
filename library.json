@@ -1,9 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["/default"],
+  "extends": ["/default", ":pinOnlyDevDependencies"],
   "packageRules": [
     {
-      "description": "This repo publishes to npm, so its peerDependencies are a constraint on consumers rather than a choice for this repo. :pinVersions would pin them to exact versions, forcing every downstream consumer onto that one version. Replace the range only when it no longer matches, instead of pinning. (engines gets the same treatment for every repo, published or not, in the default preset.)",
+      "description": "Runtime dependencies are ranges, not pins, because users resolve them fresh on every install; our lockfile isn't published. A pin holds users on whatever version our last release happened to have, so a fix (security or otherwise) reaches them only once we publish again, and npm installs a second copy whenever the user's project already has a newer one. :pinOnlyDevDependencies would use 'replace', which ignores in-range releases entirely. 'update-lockfile' still opens a PR for each one, so CI tests the same versions users are getting, and those lockfile-only PRs are safe to automerge because they change nothing in the published package. A release outside the range rewrites the range in package.json; that change ships to users, so it needs a release. A repo whose dependencies are part of its contract, such as a lint config, can pin them again locally.",
+      "matchDepTypes": ["dependencies"],
+      "rangeStrategy": "update-lockfile"
+    },
+    {
+      "description": "This repo publishes to npm, so its peerDependencies are a constraint on consumers rather than a choice for this repo. Pinning them would force every downstream consumer onto one exact version. :pinOnlyDevDependencies would 'widen' them instead (^10 becomes ^10 || ^11), which claims the old major still works when CI only tests the newest one from the lockfile. Replace the range only when it no longer matches. A repo that tests each supported peer major in CI can opt into 'widen' locally.",
       "matchDepTypes": ["peerDependencies"],
       "rangeStrategy": "replace"
     }

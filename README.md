@@ -25,7 +25,14 @@ Those two Node updates arrive as a single PR. Renovate normally learns about a r
 
 ### `library`
 
-For repos that **publish to npm**. Everything in `default`, plus one rule that keeps `peerDependencies` as ranges rather than pinning them — a pinned peer range forces every downstream consumer onto one exact version.
+For repos that **publish to npm**. Everything in `default`, except that only `devDependencies` are pinned. Everything a user installs stays a range.
+
+- **`dependencies` stay ranges.** Our lockfile isn't published, so users resolve these fresh on every install. A pin would hold them on whatever version our last release happened to have: a security fix in a dependency would reach them only when we publish again, and npm would install a second copy alongside any newer one the user's project already has. Renovate still opens a PR for each release within the range, but it only changes the lockfile, so CI tests what users are getting and the PR can automerge without changing the published package. A release outside the range rewrites `package.json`, and that change needs a release of ours to reach users.
+- **`peerDependencies` stay ranges.** A pinned peer range forces every downstream consumer onto one exact version. When a new major falls outside the range, Renovate replaces the range rather than widening it (`^10` becomes `^11`, not `^10 || ^11`), because CI only tests the newest version and widening would claim support for one it doesn't.
+
+This is Renovate's own [`config:js-lib`](https://docs.renovatebot.com/presets-config/#configjs-lib) strategy (`:pinOnlyDevDependencies`) with two changes: `update-lockfile` in place of `replace` for `dependencies`, so in-range releases still get tested, and `replace` in place of `widen` for peers.
+
+A repo whose dependencies are part of what it promises, such as a lint config where a plugin update can change which errors users see, can pin them again with a local rule.
 
 ```json
 {
