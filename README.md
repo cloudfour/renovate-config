@@ -34,6 +34,8 @@ This is Renovate's own [`config:js-lib`](https://docs.renovatebot.com/presets-co
 
 A repo whose dependencies are part of what it promises, such as a lint config where a plugin update can change which errors users see, can pin them again with a local rule.
 
+Either way, some dependency changes on `main` only reach users once the library is released: every update in a pinned repo, and in a ranged one, an update outside the range or a manual edit. Automerge makes those easy to lose track of, so libraries should also run the [dependency drift check](https://github.com/cloudfour/.github#dependency-drift-check), which keeps an issue open until a release ships them.
+
 ```json
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
